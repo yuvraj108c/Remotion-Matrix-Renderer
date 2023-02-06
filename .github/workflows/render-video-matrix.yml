@@ -15,6 +15,7 @@ on:
   workflow_dispatch:
     inputs:
       num_of_workers:
+        description: "How many workers to use?"
         required: true
         type: number
         default: 12
