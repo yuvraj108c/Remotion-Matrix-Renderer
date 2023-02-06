@@ -84,7 +84,7 @@ jobs:
 
       - id: get-total-frames
         run: |
-          output=$(npx remotion compositions ${{env.REMOTION_ENTRY_POINT}} ${{env.REMOTION_COMPOSITION_ID}})
+          output=$(npx remotion compositions ${{env.REMOTION_ENTRY_POINT}})
           value=$(echo "$output" | awk -v id="${{env.REMOTION_COMPOSITION_ID}}" '$1==id {print $4}' | tail -n 1)
           echo "total_frames=$value" >> $GITHUB_OUTPUT
     outputs:
