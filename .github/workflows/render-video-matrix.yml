@@ -1,3 +1,4 @@
+name: Render video by matrix
 run-name: Render video using ${{inputs.num_of_workers}} workers
 on:
   workflow_call:

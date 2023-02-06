@@ -1,0 +1,12 @@
+name: Usage Example
+
+on:
+  workflow_call:
+
+jobs:
+  call-workflow-in-another-repo:
+    uses: yuvraj108c/Remotion-Matrix-Renderer/.github/workflows/render-matrix.yml
+    with:
+      num_of_workers: 10
+      remotion_composition_id: Main
+      remotion_entry_point: src/index.jsx
