@@ -1,4 +1,4 @@
-name: Render video
+name: Render video normally
 on:
   workflow_dispatch:
 
