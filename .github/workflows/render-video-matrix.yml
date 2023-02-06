@@ -84,7 +84,7 @@ jobs:
 
       - id: get-total-frames
         run: |
-          output=$(npx remotion compositions ${{env.REMOTION_ENTRY_POINT}} ${{env.REMOTION_COMPOSITION_ID}})
+          output=$(remotion compositions ${{env.REMOTION_ENTRY_POINT}} ${{env.REMOTION_COMPOSITION_ID}})
           value=$(echo "$output" | awk -v id="${{env.REMOTION_COMPOSITION_ID}}" '$1==id {print $4}' | tail -n 1)
           echo "total_frames=$value" >> $GITHUB_OUTPUT
     outputs:
@@ -112,7 +112,7 @@ jobs:
             ${{ runner.os }}-node-
 
       - id: render-audio
-        run: npx remotion render ${{env.REMOTION_ENTRY_POINT}} ${{env.REMOTION_COMPOSITION_ID}} workflow_output/audio.mp3
+        run: remotion render ${{env.REMOTION_ENTRY_POINT}} ${{env.REMOTION_COMPOSITION_ID}} workflow_output/audio.mp3
 
       - uses: actions/upload-artifact@v3
         with:
@@ -161,7 +161,7 @@ jobs:
           fi
 
       - name: Render muted video
-        run: npx remotion render ${{env.REMOTION_ENTRY_POINT}} ${{env.REMOTION_COMPOSITION_ID}} workflow_output/${{matrix.worker_id}}.mp4 --frames=${{env.START_FRAME}}-${{env.END_FRAME}} --muted
+        run: remotion render ${{env.REMOTION_ENTRY_POINT}} ${{env.REMOTION_COMPOSITION_ID}} workflow_output/${{matrix.worker_id}}.mp4 --frames=${{env.START_FRAME}}-${{env.END_FRAME}} --muted
 
       - uses: actions/upload-artifact@v3
         with:
