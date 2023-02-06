@@ -1,0 +1,189 @@
+name: Render video by matrix
+on:
+  workflow_call:
+    inputs:
+      num_of_workers:
+        required: true
+        type: number
+      remotion_entry_point:
+        required: true
+        type: string
+      remotion_composition_id:
+        required: true
+        type: string
+
+  workflow_dispatch:
+    num_of_workers:
+      required: true
+      type: number
+      default: 12
+    remotion_entry_point:
+      required: true
+      type: string
+      default: src/index.js
+    remotion_composition_id:
+      required: true
+      type: string
+      default: Main
+env:
+  REMOTION_ENTRY_POINT: ${{inputs.remotion_entry_point}}
+  REMOTION_COMPOSITION_ID: ${{inputs.remotion_composition_id}}
+  NUM_OF_WORKERS: ${{inputs.num_of_workers}}
+
+jobs:
+  cache-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        id: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm i
+
+  build-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - id: set-matrix
+        run: |
+          array=($(for i in $(seq 0 $((${{env.NUM_OF_WORKERS}}-1))); do echo "\"$i\""; done))
+          array="["$(echo "${array[@]}" | tr ' ' ',')"]"
+          echo "workers_matrix=$array" >> $GITHUB_OUTPUT
+    outputs:
+      workers_matrix: ${{ steps.set-matrix.outputs.workers_matrix }}
+
+  retrieve-total-frames:
+    runs-on: ubuntu-latest
+    needs: [cache-dependencies]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Wandalen/wretry.action@master
+        with:
+          action: actions/download-artifact@v3
+          attempt_limit: 5
+          attempt_delay: 2000
+      - uses: FedericoCarboni/setup-ffmpeg@v2
+
+      - name: Restore node modules cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - id: get-total-frames
+        run: |
+          output=$(npx remotion compositions ${{env.REMOTION_ENTRY_POINT}} ${{env.REMOTION_COMPOSITION_ID}})
+          value=$(echo "$output" | awk -v id="${{env.REMOTION_COMPOSITION_ID}}" '$1==id {print $4}' | tail -n 1)
+          echo "total_frames=$value" >> $GITHUB_OUTPUT
+    outputs:
+      total_frames: ${{ steps.get-total-frames.outputs.total_frames }}
+
+  render-audio:
+    runs-on: ubuntu-latest
+    needs: [cache-dependencies]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Wandalen/wretry.action@master
+        with:
+          action: actions/download-artifact@v3
+          attempt_limit: 5
+          attempt_delay: 2000
+
+      - uses: FedericoCarboni/setup-ffmpeg@v2
+
+      - name: Restore node modules cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - id: render-audio
+        run: npx remotion render ${{env.REMOTION_ENTRY_POINT}} ${{env.REMOTION_COMPOSITION_ID}} workflow_output/audio.mp3
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: workflow_output
+          path: ./workflow_output
+
+  render-videos:
+    runs-on: ubuntu-latest
+    needs: [build-matrix, cache-dependencies, retrieve-total-frames]
+    env:
+      TOTAL_FRAMES: ${{needs.retrieve-total-frames.outputs.total_frames}}
+    strategy:
+      matrix:
+        worker_id: ${{ fromJson(needs.build-matrix.outputs.workers_matrix) }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Wandalen/wretry.action@master
+        with:
+          action: actions/download-artifact@v3
+          attempt_limit: 5
+          attempt_delay: 2000
+      - uses: FedericoCarboni/setup-ffmpeg@v2
+
+      - name: Restore node modules cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Set frames per worker
+        run: |
+          framesPerWorker=$((${{env.TOTAL_FRAMES}}/${{env.NUM_OF_WORKERS}}))
+          echo "FRAMES_PER_WORKER=$framesPerWorker" >> $GITHUB_ENV
+
+      - name: Set start frame
+        run: echo "START_FRAME=$((${{matrix.worker_id}}*${{env.FRAMES_PER_WORKER}}))" >> $GITHUB_ENV
+
+      - name: Set end frame
+        run: |
+          if [ "${{matrix.worker_id}}" -lt "$((${{env.NUM_OF_WORKERS}}-1))" ]; then
+            echo "END_FRAME=$((${{matrix.worker_id}}*${{env.FRAMES_PER_WORKER}}+${{env.FRAMES_PER_WORKER}}-1))" >> $GITHUB_ENV
+          else
+            echo "END_FRAME=$((${{env.TOTAL_FRAMES}}-1))" >> $GITHUB_ENV
+          fi
+
+      - name: Render muted video
+        run: npx remotion render ${{env.REMOTION_ENTRY_POINT}} ${{env.REMOTION_COMPOSITION_ID}} workflow_output/${{matrix.worker_id}}.mp4 --frames=${{env.START_FRAME}}-${{env.END_FRAME}} --muted
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: workflow_output
+          path: ./workflow_output
+
+  merge-videos:
+    runs-on: ubuntu-latest
+    needs: [render-videos]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Wandalen/wretry.action@master
+        with:
+          action: actions/download-artifact@v3
+          attempt_limit: 5
+          attempt_delay: 2000
+      - uses: FedericoCarboni/setup-ffmpeg@v2
+
+      - name: create text file with all mp4 files
+        run: find workflow_output/ -name '*.mp4' | sort -V | xargs printf "file '%s'\n" > list.txt
+
+      - name: merge all mp4 and mp3 files
+        run: ffmpeg -f concat -i "list.txt" -i workflow_output/audio.mp3 -c copy video.mp4
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: video
+          path: ./video.mp4
