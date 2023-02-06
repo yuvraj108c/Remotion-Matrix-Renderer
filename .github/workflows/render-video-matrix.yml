@@ -13,18 +13,19 @@ on:
         type: string
 
   workflow_dispatch:
-    num_of_workers:
-      required: true
-      type: number
-      default: 12
-    remotion_entry_point:
-      required: true
-      type: string
-      default: src/index.js
-    remotion_composition_id:
-      required: true
-      type: string
-      default: Main
+    inputs:
+      num_of_workers:
+        required: true
+        type: number
+        default: 12
+      remotion_entry_point:
+        required: true
+        type: string
+        default: src/index.js
+      remotion_composition_id:
+        required: true
+        type: string
+        default: Main
 env:
   REMOTION_ENTRY_POINT: ${{inputs.remotion_entry_point}}
   REMOTION_COMPOSITION_ID: ${{inputs.remotion_composition_id}}
