@@ -1,4 +1,4 @@
-name: Render video by matrix
+run-name: Render video using ${{inputs.num_of_workers}} workers
 on:
   workflow_call:
     inputs:
@@ -18,7 +18,7 @@ on:
         description: "How many workers to use?"
         required: true
         type: number
-        default: 12
+        default: 20
       remotion_entry_point:
         required: true
         type: string
