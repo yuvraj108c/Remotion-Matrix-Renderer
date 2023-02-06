@@ -1,0 +1,19 @@
+name: Render video
+on:
+  workflow_dispatch:
+
+jobs:
+  render:
+    name: Render video
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - uses: actions/setup-node@main
+      - uses: FedericoCarboni/setup-ffmpeg@v2
+
+      - run: npm i
+      - run: npm run build
+      - uses: actions/upload-artifact@v2
+        with:
+          name: video.mp4
+          path: out/video.mp4

@@ -1,0 +1,22 @@
+{
+	"name": "remotion-template-javascript",
+	"version": "1.0.0",
+	"description": "My Remotion video",
+	"scripts": {
+		"start": "remotion preview",
+		"build": "remotion render Main out/video.mp4"
+	},
+	"repository": {},
+	"license": "UNLICENSED",
+	"dependencies": {
+		"@remotion/cli": "^3.3.39",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"remotion": "^3.3.39"
+	},
+	"devDependencies": {
+		"@remotion/eslint-config": "^3.3.39",
+		"eslint": "^8.30.0",
+		"prettier": "^2.8.1"
+	}
+}
