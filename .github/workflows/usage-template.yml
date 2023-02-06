@@ -4,15 +4,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  # call-workflow-in-another-repo:
-  #   uses: yuvraj108c/Remotion-Matrix-Renderer/.github/workflows/render-video-matrix.yml@master
-  #   with:
-  #     num_of_workers: 10
-  #     remotion_composition_id: Main
-  #     remotion_entry_point: src/index.js
-  call-workflow-in-local-repo:
-    uses: ./.github/workflows/render-video-matrix.yml
+  call-workflow-in-another-repo:
+    uses: yuvraj108c/Remotion-Matrix-Renderer/.github/workflows/render-video-matrix.yml@master
     with:
       num_of_workers: 10
       remotion_composition_id: Main
       remotion_entry_point: src/index.js
+  # call-workflow-in-local-repo:
+  #   uses: ./.github/workflows/render-video-matrix.yml
+  #   with:
+  #     num_of_workers: 10
+  #     remotion_composition_id: Main
+  #     remotion_entry_point: src/index.js
