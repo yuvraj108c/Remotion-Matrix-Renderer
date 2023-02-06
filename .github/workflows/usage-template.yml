@@ -5,7 +5,7 @@ on:
 
 jobs:
   call-workflow-in-another-repo:
-    uses: yuvraj108c/Remotion-Matrix-Renderer/.github/workflows/render-matrix.yml@v1
+    uses: yuvraj108c/Remotion-Matrix-Renderer/.github/workflows/render-matrix.yml@master
     with:
       num_of_workers: 10
       remotion_composition_id: Main
