@@ -15,7 +15,7 @@ Render [Remotion](https://www.remotion.dev/) videos blazingly fast (up to 6x) us
 ```YAML
 name: Call Remotion-Matrix-Renderer
 
-on: push: main
+on: push
 
 jobs:
   call-workflow-in-another-repo:
