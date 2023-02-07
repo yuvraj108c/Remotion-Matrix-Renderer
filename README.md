@@ -1,5 +1,5 @@
 # Remotion Matrix Renderer ⚡
-Render [Remotion](https://www.remotion.dev/) videos blazingly fast using github actions matrix strategy.
+Render [Remotion](https://www.remotion.dev/) videos blazingly fast using [Github Actions Matrix](https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs/).
 
 ## Quick Demo
 1. Fork this repository.
@@ -28,4 +28,4 @@ jobs:
 
 ## Limitations
 1. Rendering speed is highly dependent on the number of available github runners. 
-2. Rendering on private repositories can eat up your free github actions minutes quickly.
+2. Rendering on private repositories can consume your free github actions minutes quickly.
