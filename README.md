@@ -1,5 +1,5 @@
 # Remotion Matrix Renderer ⚡
-Render [Remotion](https://www.remotion.dev/) videos blazingly fast (upto 6x) using [Github Actions Matrix](https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs/).
+Render [Remotion](https://www.remotion.dev/) videos blazingly fast (up to 6x) using [Github Actions Matrix](https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs/).
 
 ## Quick Demo
 1. Fork this repository.
