@@ -9,13 +9,13 @@
 	"repository": {},
 	"license": "UNLICENSED",
 	"dependencies": {
-		"@remotion/cli": "^3.3.39",
+		"@remotion/cli": "^3.3.40",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"remotion": "^3.3.39"
+		"remotion": "^3.3.40"
 	},
 	"devDependencies": {
-		"@remotion/eslint-config": "^3.3.39",
+		"@remotion/eslint-config": "^3.3.40",
 		"eslint": "^8.30.0",
 		"prettier": "^2.8.1"
 	}
