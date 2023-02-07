@@ -1,4 +1,4 @@
-name: Usage Example
+name: Usage Template
 
 on:
   workflow_dispatch:
@@ -10,9 +10,3 @@ jobs:
       num_of_workers: 10
       remotion_composition_id: Main
       remotion_entry_point: src/index.js
-  # call-workflow-in-local-repo:
-  #   uses: ./.github/workflows/render-video-matrix.yml
-  #   with:
-  #     num_of_workers: 10
-  #     remotion_composition_id: Main
-  #     remotion_entry_point: src/index.js
